@@ -1,5 +1,5 @@
 from flask import Flask, app
-from config import config_options
+from config import config_options,DevConfig
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 db = SQLAlchemy()
@@ -14,7 +14,10 @@ def create_app(config_name):
     #Initializing flask extensions
     db.init_app(app)
     login_manager.init_app(app)
-     # Registering the blueprint
+   # setting config
+    from .request import configure_request
+    configure_request(app)
+  # Registering the blueprint
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
     return app

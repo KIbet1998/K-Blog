@@ -2,6 +2,15 @@ from datetime import datetime
 from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash,check_password_hash
+
+class Quotes:
+    '''
+    Quote class to define quote objects
+    '''
+    def __init__(self,id,author,quote):
+        self.id=id
+        self.author=author
+        self.quote=quote
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

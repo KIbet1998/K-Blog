@@ -8,12 +8,15 @@ from flask_login import login_user,logout_user,login_required,current_user
 from ..models import Post, User
 from .forms import RegistrationForm,LoginForm,UpdateAccountForm,PostForm
 from flask_sqlalchemy import SQLAlchemy
+from ..request import get_quotes
 #views
 @main.route('/')
 @main.route('/home')
 def home():
+    quotes=get_quotes()
     posts=Post.query.all()
-    return render_template("home.html",posts=posts)
+    return render_template("home.html",posts=posts,quotes=quotes)
+
 @main.route('/about')
 def about():
     return render_template("about.html")
@@ -93,3 +96,32 @@ def new_post():
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     return render_template('post.html', title=post.title, post=post)
+
+@main.route('/post/<int:post_id>/update',methods=['GET','POST'])
+@login_required
+def update_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author !=current_user:
+        os.abort(403)
+    form=PostForm()
+    if form.validate_on_submit():
+        post.title=form.title.data
+        post.content=form.content.data
+        db.session.commit()
+        flash("Your post has been updated",'success')
+        return redirect(url_for('.post',post_id=post_id))
+    elif request.method=='GET':
+        
+        form.title.data=post.title
+        form.content.data=post.content
+    return render_template('create_post.html', title='Update Post',legend='Update Post', post=post,form=form)
+@main.route('/post/<int:post_id>/delete',methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author !=current_user:
+        os.abort(403)
+    db.session.delete(post)
+    db.session.commit()
+    flash("Your post has been deleted",'success')
+    return redirect(url_for('.home'))

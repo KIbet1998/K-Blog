@@ -1,7 +1,14 @@
 {% extends 'index.html'%}
 {% block content%}
 {% for post in posts %}
-<hr>
+
+<div class="media content-section">
+    <div class="media-body">
+        <p>{{quotes[1]}}</p>
+        <h6 class="mr-4">{{quotes[2]}}</h6>
+    </div>
+</div>
+
 <article class="media content-section">
     <img class="rounded_circle article-img" src="{{ url_for('static',filename='css/photos/' + post.author.image_file)}}" alt="No image">
 <div class="media-body">
@@ -13,6 +20,6 @@
     <p class="article-content">{{ post.content }}</p>
 </div>
 </article>
-<hr>
+
 {% endfor %}
 {% endblock content%}
